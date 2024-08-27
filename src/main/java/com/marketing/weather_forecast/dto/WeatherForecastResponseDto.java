@@ -3,7 +3,12 @@ package com.marketing.weather_forecast.dto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
+@Getter
 public class WeatherForecastResponseDto {
+
+    private List<DailyForecast> list;
 
     @Getter
     @Setter
