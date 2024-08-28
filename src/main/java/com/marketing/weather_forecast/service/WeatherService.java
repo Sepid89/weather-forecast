@@ -34,7 +34,7 @@ public class WeatherService {
     public WeatherService(Environment environment, WebClient.Builder webClientBuilder, ObjectMapper objectMapper) {
         this.webClient = webClientBuilder.baseUrl(environment.getProperty("openweathermap.api.url")).build();
         this.API_KEY = environment.getProperty("openweathermap.api.key");
-        this.objectMapper = new ObjectMapper();
+        this.objectMapper = objectMapper;
     }
 
     public WeatherForecastResponseDto getWeatherForecastForBerlin(){

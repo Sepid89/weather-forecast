@@ -1,0 +1,24 @@
+server:
+  port: 8080
+
+spring:
+  mail:
+    username: s.jamshididana@gmail.com
+    to: Lisa
+    host: smtp.gmail.com
+    port: 587
+    password: necljgwvbhtibtuu
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          auth: true
+          starttls:
+            required: true
+            enable: true
+
+openweathermap:
+  api:
+    key: b746120830bbe1d4ee65dfb19cd3a3c7
+    url: http://api.openweathermap.org/data/2.5/weather?q=Berlin
