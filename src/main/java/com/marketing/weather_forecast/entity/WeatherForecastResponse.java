@@ -1,7 +1,6 @@
 package com.marketing.weather_forecast.entity;
 
 import lombok.*;
-
 import java.util.List;
 
 @AllArgsConstructor
