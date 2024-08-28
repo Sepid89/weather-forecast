@@ -1,6 +1,6 @@
 package com.marketing.weather_forecast.service;
 
-import com.marketing.weather_forecast.dto.WeatherForecastResponseDto;
+import com.marketing.weather_forecast.entity.WeatherForecastResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -18,8 +18,8 @@ public class ScheduledTasks {
 
     @Scheduled(cron = "0 0 7 * * ?") // Every day at 7 AM
     public void sendDailyWeatherForecast() {
-        WeatherForecastResponseDto forecast = weatherService.getWeatherForecastForBerlin();
-        String emailContent = emailService.prepareEmailContent(forecast);
-        emailService.sendWeatherForecastEmail("marketing@deefinity.com", "14-Day Weather Forecast", emailContent);
+        WeatherForecastResponse forecast = weatherService.getWeatherForecastForBerlin();
+        //String emailContent = emailService.prepareEmailContent(forecast);
+        emailService.sendWeatherForecastEmail("marketing@deefinity.com", "14-Day Weather Forecast", "emailContent");
     }
 }
