@@ -21,6 +21,7 @@ public class EmailSchedulerService {
     }
 
     @Scheduled(fixedRate = 600000) // 10 min
+    //@Scheduled(cron = "0 0 15 28-31 8 0")
     public void sendWeatherEmailEvery10Minutes(){
         String email = "sepidejamshididana@yahoo.com";
         String weatherReport = weatherService.getFormattedWeatherForBerlin();

@@ -27,7 +27,6 @@ public class WeatherService {
 
     private static final Logger logger = LoggerFactory.getLogger(WeatherService.class);
     private final WebClient webClient;
-    private final String API_URL;
     private final String API_KEY;
     private final ObjectMapper objectMapper;
 
@@ -35,7 +34,6 @@ public class WeatherService {
     public WeatherService(Environment environment, WebClient.Builder webClientBuilder, ObjectMapper objectMapper) {
         this.webClient = webClientBuilder.baseUrl(environment.getProperty("openweathermap.api.url")).build();
         this.API_KEY = environment.getProperty("openweathermap.api.key");
-        this.API_URL = environment.getProperty("openweathermap.api.url");
         this.objectMapper = new ObjectMapper();
     }
 

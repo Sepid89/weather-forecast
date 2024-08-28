@@ -35,7 +35,7 @@ public class WeatherController {
         }
     }
 
-    @PostMapping("/send-forecast-berlin")
+    @PostMapping("/send-mail-weather")
     public ResponseEntity<String> scheduleWeatherEmails(){
         try {
             emailSchedulerService.sendWeatherEmailEvery10Minutes();
