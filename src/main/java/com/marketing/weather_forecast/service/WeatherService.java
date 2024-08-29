@@ -3,6 +3,7 @@ package com.marketing.weather_forecast.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marketing.weather_forecast.dto.DayDto;
+import com.marketing.weather_forecast.dto.HourDto;
 import com.marketing.weather_forecast.dto.WeatherForecastResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,14 +115,31 @@ public class WeatherService {
         float maxTempCelsius = forecast.getTempmax();
         String weatherDescription = forecast.getDescription();
         float windVelocity = forecast.getWindspeed();
-        float chanceOfPrecipitation = forecast.getPrecipprob();
+
+        float averagePrecipProb = 0;
+
+        // Check if the hours list is not null and contains data
+        if (forecast.getHours() != null && !forecast.getHours().isEmpty()) {
+            float totalPrecipProb = 0;
+            int count = 0;
+
+            System.out.println(count);
+
+            for (HourDto hour : forecast.getHours()) {
+                totalPrecipProb += hour.getPrecipprob();
+                count++;
+            }
+
+            // Calculate the average precipprob
+            averagePrecipProb = count > 0 ? totalPrecipProb / count : 0;
+        }
 
         if(weatherDescription.isEmpty()){
             weatherDescription ="Weather prediction not available.";
         }
 
         String outPut = String.format("%s:\nMin Temp: %.2f°C\nMax Temp: %.2f°C\nDescription: %s\nWind Velocity: %.2f m/s\nChance of Precipitation: %.2f%%",
-                formattedDate, minTempCelsius, maxTempCelsius, weatherDescription, windVelocity, chanceOfPrecipitation);
+                formattedDate, minTempCelsius, maxTempCelsius, weatherDescription, windVelocity, averagePrecipProb);
         System.out.println(outPut);
 
         return outPut;

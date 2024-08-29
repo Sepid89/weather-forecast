@@ -19,7 +19,4 @@ public class WeatherForecastResponseDto {
   private double tzoffset;
   private String description;
   private List<DayDto> days;
-  private List<AlertDto> alerts;
-  private Map<String, Station> stations;
-  private CurrentConditionsDto currentConditions;
 }

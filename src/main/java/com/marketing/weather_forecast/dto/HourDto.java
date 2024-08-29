@@ -15,10 +15,8 @@ public class HourDto {
     private double humidity;
     private double dew;
     private double precip;
-    private double precipprob;
+    private float precipprob;
     private double snow;
-    private double snowdepth;
-    private String preciptype;
     private double windgust;
     private double windspeed;
     private double winddir;

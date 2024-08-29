@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -16,4 +18,5 @@ public class DayDto {
     private String description;
     private float windspeed;
     private float precipprob;
+    private List<HourDto> hours;
 }
