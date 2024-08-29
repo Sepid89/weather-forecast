@@ -4,53 +4,141 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body {
+body {
+     margin: 0;
+            padding: 0;
+            width: 100% !important;
+            -webkit-font-smoothing: antialiased;
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background-color: #e0f7fa;
             color: #333;
-            padding: 20px;
             line-height: 1.6;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .header {
             text-align: center;
-            padding-bottom: 20px;
-        }
-        .header img {
-            width: 100px;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #D2E3FF;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+ .header img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
             height: auto;
+            max-width: 100%;
         }
-        .content {
-            margin-bottom: 20px;
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    -ms-interpolation-mode: bicubic;
+    align: center
+}
+
+h2 {
+    margin-bottom: 20px;
+    color: #5394BA;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+}
+
+th {
+    background-color: #5394BA;
+    color: white;
+    opacity: 0.7
+}
+
+th img {
+            width: 50px; /* Adjust the size of the image */
+            height: 50px;
+            vertical-align: middle;
+            margin-left: 8px;
         }
-        .footer {
-            text-align: center;
-            font-size: 0.9em;
-            color: #777;
+
+.footer {
+    text-align: center;
+    font-size: 0.9em;
+    color: #777;
+}
+
+body, table, td, a {
+     -webkit-text-size-adjust: 100%;
+     -ms-text-size-adjust: 100%;
         }
+table, td {
+     mso-table-lspace: 0pt;
+     mso-table-rspace: 0pt;
+        }
+
+@media only screen and (max-width: 600px) {
+            .container {
+                width: 100% !important;
+                padding: 10px !important;
+            }
+
+table, th, td {
+        font-size: 14px;
+            }
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+}
     </style>
-</head>
+
+   </head>
 <body>
 <div class="container">
     <div class="header">
-        <img src="https://your-logo-url.com/logo.png" alt="Logo">
-        <h2>Weather in Berlin</h2>
-        <div>Hello <b th:text="${username}"></b></div>
+        <img src="https://i.postimg.cc/vDFpg5zb/weather-forecast.png" height="200" width="200" alt="Logo"/>
+        <h2>🌤️ 14-Day Weather Forecast in Berlin</h2>
+        <p>Hello <strong>[[${username}]]</strong>,</p>
+        <p>The weather report of Berlin in 14 days is as follows. I hope you enjoy the weather.</p>
+        <p><em>In German we say:</em> "Es gibt kein schlechtes Wetter, es gibt nur falsche Kleidung."</p>
     </div>
     <div class="content">
-        <p><strong>Date:</strong> 28-08-2024</p>
-        <p><strong>Min Temp:</strong> 34.84°C</p>
-        <p><strong>Max Temp:</strong> 36.79°C</p>
-        <p><strong>Description:</strong> Scattered Clouds</p>
-        <p><strong>Wind Velocity:</strong> 4.12 m/s</p>
-        <p><strong>Chance of Precipitation:</strong> 0.00%</p>
+        <table>
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Min Temp<img src="https://svgshare.com/i/19pj.svg" class="center"/></th>
+                <th>Max Temp<img src="https://svgshare.com/i/19oX.svg" class="center"/></th>
+                <th>Description<img src="https://svgshare.com/i/19or.svg" class="center"/></th>
+                <th>Wind Velocity<img src="https://svgshare.com/i/19nf.svg" class="center"/></th>
+                <th>Chance of Precipitation<img src="https://svgshare.com/i/19o0.svg" class="center"/></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="report : ${weatherReports}">
+                <td th:text="${#strings.arraySplit(report, ':')[0]}"></td>
+                <td th:text="${#strings.substring(report, report.indexOf('Min Temp: ') + 10, report.indexOf('°C')) + '°C'}"></td>
+                <td th:text="${#strings.substring(report, report.indexOf('Max Temp: ') + 10, report.indexOf('°C', report.indexOf('Max Temp: ') + 10))+ '°C'}"></td>
+                <td th:text="${#strings.substring(report, report.indexOf('Description: ') + 12, report.indexOf('.', report.indexOf('Description: ')) + 1)}"></td>
+                <td th:text="${#strings.substring(report, report.indexOf('Wind Velocity: ') + 15, report.indexOf(' m/s', report.indexOf('Wind Velocity: ')))} + ' m/s'"></td>
+                <td th:text="${#strings.substring(report, report.indexOf('Chance of Precipitation: ') + 25, report.indexOf('%', report.indexOf('Chance of Precipitation: ')))} + '%'"></td>
+            </tr>
+            </tbody>
+        </table>
     </div>
     <div class="footer">
         <p>This is an automated email, please do not reply.</p>

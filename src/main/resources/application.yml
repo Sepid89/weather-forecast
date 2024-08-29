@@ -18,7 +18,6 @@ spring:
             required: true
             enable: true
 
-openweathermap:
+visualcrossing:
   api:
-    key: b746120830bbe1d4ee65dfb19cd3a3c7
-    url: http://api.openweathermap.org/data/2.5/weather?q=Berlin
+    key: TNRLU3LFMM54H3TQLA6E5P4QC

@@ -1,0 +1,61 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e0f7fa;
+    color: #333;
+    padding: 20px;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+h2 {
+    margin-bottom: 20px;
+    color: #5394BA;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+th, td {
+    padding: 10px;
+    text-align: center;
+}
+
+th {
+    background-color: #5394BA;
+    color: white;
+}
+
+th svg {
+    width: 50px; /* Adjust the size of the SVG */
+    height: 50px;
+    vertical-align: middle; /* Align SVG with text */
+    margin-left: 8px; /* Add some spacing between text and SVG */
+    }
+
+.footer {
+    text-align: center;
+    font-size: 0.9em;
+    color: #777;
+}
