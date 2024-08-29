@@ -17,8 +17,10 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Service
 public class WeatherService {
@@ -87,7 +89,7 @@ public class WeatherService {
     }
 
 
-    public List<String> getFormattedWeatherForBerlin() {
+    public List<String> getFormattedWeatherData() {
         String jsonResponse = fetchWeatherData();
         WeatherForecastResponseDto responseDto = deserializeWeatherData(jsonResponse);
 
@@ -111,6 +113,7 @@ public class WeatherService {
      */
     private String formatWeatherData(DayDto forecast) {
         String formattedDate = forecast.getDatetime();
+        String dayName = getDayName(formattedDate);
         float minTempCelsius = forecast.getTempmin();
         float maxTempCelsius = forecast.getTempmax();
         String weatherDescription = forecast.getDescription();
@@ -138,21 +141,16 @@ public class WeatherService {
             weatherDescription ="Weather prediction not available.";
         }
 
-        String outPut = String.format("%s:\nMin Temp: %.2f°C\nMax Temp: %.2f°C\nDescription: %s\nWind Velocity: %.2f m/s\nChance of Precipitation: %.2f%%",
-                formattedDate, minTempCelsius, maxTempCelsius, weatherDescription, windVelocity, averagePrecipProb);
+        String outPut = String.format("%s (%s):\nMin Temp: %.2f°C\nMax Temp: %.2f°C\nDescription: %s\nWind Velocity: %.2f m/s\nChance of Precipitation: %.2f%%",
+                formattedDate,dayName, minTempCelsius, maxTempCelsius, weatherDescription, windVelocity, averagePrecipProb);
         System.out.println(outPut);
 
         return outPut;
     }
 
-
-    /**
-     * Converts temperature from Fahrenheit to Celsius.
-     *
-     * @param fahrenheit Temperature in Fahrenheit.
-     * @return Temperature in Celsius.
-     */
-    private float convertFahrenheitToCelsius(float fahrenheit) {
-        return (fahrenheit - 32) * 5 / 9;
+    private String getDayName(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate localDate = LocalDate.parse(date, formatter);
+        return localDate.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH);
     }
 }

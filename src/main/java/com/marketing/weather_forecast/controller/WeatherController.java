@@ -34,7 +34,7 @@ public class WeatherController {
     @GetMapping("/berlin")
     public String getWeatherDetails() {
 
-        List<String> weatherReports = weatherService.getFormattedWeatherForBerlin();
+        List<String> weatherReports = weatherService.getFormattedWeatherData();
 
         StringBuilder weatherReportString = new StringBuilder();
         for(String report : weatherReports){

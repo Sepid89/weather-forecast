@@ -35,10 +35,10 @@ public class EmailSchedulerService {
     //@Scheduled(fixedRate = 600000) // 10 min
     //@Scheduled(cron = "0 0 15 28-31 8 0")
     public void sendWeatherEmailEvery10Minutes() throws MessagingException {
-        String email = "mohamad_shirifard@yahoo.com"; //sepidejamshididana@yahoo.com
+        String email = "sepidejamshididana@yahoo.com";
 
         // Get the 14-day weather reports
-        List<String> weatherReports = weatherService.getFormattedWeatherForBerlin();
+        List<String> weatherReports = weatherService.getFormattedWeatherData();
 
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message,
