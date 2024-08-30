@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
@@ -15,9 +14,8 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-@AllArgsConstructor
 @Service
-//@EnableScheduling
+@AllArgsConstructor
 public class EmailSchedulerService {
 
     private final JavaMailSender mailSender;
@@ -32,8 +30,7 @@ public class EmailSchedulerService {
      * @param weatherReports The list of formatted weather reports to be included in the email.
      * @throws MessagingException If there is an error in the email sending process.
      */
-    @Scheduled(cron = "0 0 8 * * *")
-    public void sendEmail(String email, List<String> weatherReports) throws MessagingException {
+    public void sendEmailWeatherReport(String email, List<String> weatherReports) throws MessagingException {
 
         MimeMessage message = createMimeMessage(email, getEmailRecipient(), weatherReports);
 

@@ -7,9 +7,9 @@ import com.marketing.weather_forecast.dto.HourDto;
 import com.marketing.weather_forecast.dto.WeatherForecastResponseDto;
 import com.sun.jdi.InternalException;
 import lombok.AllArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -23,26 +23,31 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-@AllArgsConstructor
 @Service
+@EnableScheduling
+@AllArgsConstructor
 public class WeatherService {
-
-    private static final Logger logger = LoggerFactory.getLogger(WeatherService.class);
 
     private final ObjectMapper objectMapper;
     private final EmailSchedulerService emailSchedulerService;
     private final Environment environment;
 
     /**
-     * Sends an email with the formatted weather data.
+     * Sends an email with the weather data every day at 8:00 AM.
+     *
+     * <p>This method is scheduled to run automatically at 8:00 AM every day.
+     * It gets the weather data and sends it to the specified email address.
+     *
+     * @throws InternalException if there is an error while sending the email.
      */
+    @Scheduled(cron = "0 0 8 * * *")
     public void sendEmail() {
 
         String email = "sepidejamshididana@yahoo.com";
         List<String> weatherReports = getFormattedWeatherData();
 
         try {
-            emailSchedulerService.sendEmail(email, weatherReports);
+            emailSchedulerService.sendEmailWeatherReport(email, weatherReports);
         } catch (Exception e) {
             throw new InternalException("Failed to schedule weather emails.");
         }
@@ -74,7 +79,6 @@ public class WeatherService {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             return response.body();
         } catch (Exception e) {
-            logger.error("Failed to fetch weather data", e);
             throw new RuntimeException("Failed to fetch weather data.", e);
         }
     }
@@ -88,10 +92,8 @@ public class WeatherService {
      */
     private WeatherForecastResponseDto deserializeWeatherData(String jsonResponse) {
         try {
-            logger.info("Deserializing weather data...");
             return objectMapper.readValue(jsonResponse, WeatherForecastResponseDto.class);
         } catch (JsonProcessingException e) {
-            logger.error("Failed to deserialize weather data", e);
             throw new RuntimeException("Failed to deserialize weather data", e);
         }
     }
