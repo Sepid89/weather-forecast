@@ -16,6 +16,6 @@ public class WeatherController {
 
     @PostMapping("/send-mail-weather")
     public void scheduleWeatherEmails() {
-            weatherService.sendEmail();
+        weatherService.sendEmail();
     }
 }

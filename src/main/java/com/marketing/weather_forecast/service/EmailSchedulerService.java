@@ -85,6 +85,6 @@ public class EmailSchedulerService {
         context.setVariable("username", emailTo);
         context.setVariable("weatherReports", weatherReports);
 
-        return templateEngine.process("email_html", context);
+        return templateEngine.process("email_template", context);
     }
 }

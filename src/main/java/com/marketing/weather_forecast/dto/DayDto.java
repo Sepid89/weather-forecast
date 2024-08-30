@@ -23,12 +23,10 @@ public class DayDto {
     @JsonProperty("tempmin")
     private float tempMin;
 
-    @JsonProperty("description")
     private String description;
 
     @JsonProperty("windspeed")
     private float windSpeed;
 
-    @JsonProperty("hours")
     private List<HourDto> hours;
 }
