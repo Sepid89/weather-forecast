@@ -36,18 +36,17 @@ public class WeatherService {
      * Sends an email with the weather data every day at 8:00 AM.
      *
      * <p>This method is scheduled to run automatically at 8:00 AM every day.
-     * It gets the weather data and sends it to the specified email address.
+     * It gets the weather data , formats it, and sends it to a specific email address.
      *
      * @throws InternalException if there is an error while sending the email.
      */
     @Scheduled(cron = "0 0 8 * * *")
     public void sendEmail() {
 
-        String email = "sepidejamshididana@yahoo.com";
         List<String> weatherReports = getFormattedWeatherData();
 
         try {
-            emailSchedulerService.sendEmailWeatherReport(email, weatherReports);
+            emailSchedulerService.sendEmailWeatherReport(weatherReports);
         } catch (Exception e) {
             throw new InternalException("Failed to schedule weather emails.");
         }
@@ -64,11 +63,17 @@ public class WeatherService {
         LocalDate endDate = startDate.plusDays(14);
 
         HttpClient httpClient = HttpClient.newHttpClient();
-        String API_KEY = environment.getProperty("visualCrossing.api.key");
+        String apiKey = environment.getProperty("visualCrossing.api.key");
+        String baseUrl = environment.getProperty("weather.api.base-url");
+        String unitGroup = environment.getProperty("weather.api.unit-group");
+        String contentType = environment.getProperty("weather.api.content-type");
+        String city = environment.getProperty("weather.api.default-city");
 
         String uri = String.format(
-                "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/Berlin/%s/%s?unitGroup=metric&key=%s&contentType=json",
-                startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), API_KEY);
+                "%s/%s/%s/%s?unitGroup=%s&key=%s&contentType=%s",
+                baseUrl, city, startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+                unitGroup, apiKey, contentType);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(uri))

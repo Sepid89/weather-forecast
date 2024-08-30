@@ -26,13 +26,13 @@ public class EmailSchedulerService {
     /**
      * Sends an email containing weather reports.
      *
-     * @param email          The recipient's email address.
      * @param weatherReports The list of formatted weather reports to be included in the email.
      * @throws MessagingException If there is an error in the email sending process.
      */
-    public void sendEmailWeatherReport(String email, List<String> weatherReports) throws MessagingException {
+    public void sendEmailWeatherReport(List<String> weatherReports) throws MessagingException {
 
-        MimeMessage message = createMimeMessage(email, getEmailRecipient(), weatherReports);
+        String emailAddress = environment.getProperty("weather.email.recipient");
+        MimeMessage message = createMimeMessage(emailAddress, getEmailRecipient(), weatherReports);
 
         mailSender.send(message);
     }

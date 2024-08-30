@@ -1,6 +1,0 @@
-Hello [( ${username} )],
-
-
-
-Regards,
-Sepi Dana
