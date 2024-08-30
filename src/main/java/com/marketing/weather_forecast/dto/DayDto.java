@@ -1,22 +1,34 @@
 package com.marketing.weather_forecast.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class DayDto {
+
+    @JsonProperty("datetime")
     private String datetime;
-    private float tempmax;
-    private float tempmin;
+
+    @JsonProperty("tempmax")
+    private float tempMax;
+
+    @JsonProperty("tempmin")
+    private float tempMin;
+
+    @JsonProperty("description")
     private String description;
-    private float windspeed;
-    private float precipprob;
+
+    @JsonProperty("windspeed")
+    private float windSpeed;
+
+    @JsonProperty("hours")
     private List<HourDto> hours;
 }

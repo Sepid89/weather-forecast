@@ -5,9 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.marketing.weather_forecast.dto.DayDto;
 import com.marketing.weather_forecast.dto.HourDto;
 import com.marketing.weather_forecast.dto.WeatherForecastResponseDto;
+import com.sun.jdi.InternalException;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
@@ -22,19 +23,29 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+@AllArgsConstructor
 @Service
 public class WeatherService {
 
     private static final Logger logger = LoggerFactory.getLogger(WeatherService.class);
-    private final HttpClient httpClient;
-    private final String API_KEY;
-    private final ObjectMapper objectMapper;
 
-    @Autowired
-    public WeatherService(Environment environment, ObjectMapper objectMapper) {
-        this.httpClient = HttpClient.newHttpClient();
-        this.API_KEY = environment.getProperty("visualcrossing.api.key");
-        this.objectMapper = objectMapper;
+    private final ObjectMapper objectMapper;
+    private final EmailSchedulerService emailSchedulerService;
+    private final Environment environment;
+
+    /**
+     * Sends an email with the formatted weather data.
+     */
+    public void sendEmail() {
+
+        String email = "sepidejamshididana@yahoo.com";
+        List<String> weatherReports = getFormattedWeatherData();
+
+        try {
+            emailSchedulerService.sendEmail(email, weatherReports);
+        } catch (Exception e) {
+            throw new InternalException("Failed to schedule weather emails.");
+        }
     }
 
     /**
@@ -43,28 +54,25 @@ public class WeatherService {
      * @return JSON response as a String.
      */
     private String fetchWeatherData() {
+
+        LocalDate startDate = LocalDate.now();
+        LocalDate endDate = startDate.plusDays(14);
+
+        HttpClient httpClient = HttpClient.newHttpClient();
+        String API_KEY = environment.getProperty("visualCrossing.api.key");
+
+        String uri = String.format(
+                "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/Berlin/%s/%s?unitGroup=metric&key=%s&contentType=json",
+                startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")), API_KEY);
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(uri))
+                .method("GET", HttpRequest.BodyPublishers.noBody())
+                .build();
+
         try {
-            LocalDate startDate = LocalDate.now();
-            LocalDate endDate = startDate.plusDays(15);
-            String formattedStartDate = startDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            String formattedEndDate = endDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-            System.out.println("Start date : " + formattedStartDate);
-            System.out.println("End date : " + formattedEndDate);
-
-            String uri = String.format(
-                    "https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/Berlin/%s/%s?unitGroup=metric&key=%s&contentType=json",
-                    formattedStartDate, formattedEndDate, API_KEY);
-            System.out.println(uri);
-
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(uri))
-                    .method("GET", HttpRequest.BodyPublishers.noBody())
-                    .build();
-
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             return response.body();
-
         } catch (Exception e) {
             logger.error("Failed to fetch weather data", e);
             throw new RuntimeException("Failed to fetch weather data.", e);
@@ -88,10 +96,13 @@ public class WeatherService {
         }
     }
 
-
-    public List<String> getFormattedWeatherData() {
-        String jsonResponse = fetchWeatherData();
-        WeatherForecastResponseDto responseDto = deserializeWeatherData(jsonResponse);
+    /**
+     * Retrieves and formats the weather data for Berlin.
+     *
+     * @return A list of formatted weather data strings.
+     */
+    private List<String> getFormattedWeatherData() {
+        WeatherForecastResponseDto responseDto = deserializeWeatherData(fetchWeatherData());
 
         if (responseDto == null || responseDto.getDays().isEmpty()) {
             throw new RuntimeException("Failed to retrieve weather data!");
@@ -112,42 +123,49 @@ public class WeatherService {
      * @return Formatted weather data string.
      */
     private String formatWeatherData(DayDto forecast) {
-        String formattedDate = forecast.getDatetime();
-        String dayName = getDayName(formattedDate);
-        float minTempCelsius = forecast.getTempmin();
-        float maxTempCelsius = forecast.getTempmax();
+
         String weatherDescription = forecast.getDescription();
-        float windVelocity = forecast.getWindspeed();
 
-        float averagePrecipProb = 0;
-
-        // Check if the hours list is not null and contains data
-        if (forecast.getHours() != null && !forecast.getHours().isEmpty()) {
-            float totalPrecipProb = 0;
-            int count = 0;
-
-            System.out.println(count);
-
-            for (HourDto hour : forecast.getHours()) {
-                totalPrecipProb += hour.getPrecipprob();
-                count++;
-            }
-
-            // Calculate the average precipprob
-            averagePrecipProb = count > 0 ? totalPrecipProb / count : 0;
+        if (weatherDescription.isEmpty()) {
+            weatherDescription = "Weather prediction not available.";
         }
 
-        if(weatherDescription.isEmpty()){
-            weatherDescription ="Weather prediction not available.";
-        }
-
-        String outPut = String.format("%s (%s):\nMin Temp: %.2f°C\nMax Temp: %.2f°C\nDescription: %s\nWind Velocity: %.2f m/s\nChance of Precipitation: %.2f%%",
-                formattedDate,dayName, minTempCelsius, maxTempCelsius, weatherDescription, windVelocity, averagePrecipProb);
-        System.out.println(outPut);
-
-        return outPut;
+        return """
+                %s (%s):
+                Min Temp: %.2f°C
+                Max Temp: %.2f°C
+                Description: %s
+                Wind Velocity: %.2f m/s
+                Chance of Precipitation: %.2f%%
+                """.formatted(forecast.getDatetime(), getDayName(forecast.getDatetime()), forecast.getTempMin(),
+                forecast.getTempMax(), weatherDescription, forecast.getWindSpeed(), getAveragePrecipitationProb(forecast));
     }
 
+    /**
+     * Calculates the average chance of precipitation for the day.
+     *
+     * @param forecast The DailyForecast object containing hourly precipitation data.
+     * @return The average precipitation probability.
+     */
+    private static float getAveragePrecipitationProb(DayDto forecast) {
+        List<HourDto> hourDtoList = forecast.getHours();
+        if (hourDtoList == null || hourDtoList.isEmpty())
+            return 0;
+
+        float totalPrecipitationProb = (float) hourDtoList
+                .stream()
+                .mapToDouble(HourDto::getPrecipitationProb)
+                .sum();
+
+        return totalPrecipitationProb / hourDtoList.size();
+    }
+
+    /**
+     * Retrieves the name of the day for a given date.
+     *
+     * @param date The date string in "yyyy-MM-dd" format.
+     * @return The name of the day in English.
+     */
     private String getDayName(String date) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate localDate = LocalDate.parse(date, formatter);
