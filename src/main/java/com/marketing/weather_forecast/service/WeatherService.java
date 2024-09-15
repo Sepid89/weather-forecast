@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Locale;
 
 @Service
-@EnableScheduling
 @AllArgsConstructor
 public class WeatherService {
 
